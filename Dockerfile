@@ -1,17 +1,18 @@
-# Python image to use.
-FROM python:3.12-alpine
+# 使用 Python 3.9-slim 作為基礎映像
+FROM python:3.9-slim
 
-# Set the working directory to /app
+# 設定工作目錄為 /app
 WORKDIR /app
 
-# copy the requirements file used for dependencies
+# 將 requirements.txt 複製到工作目錄
 COPY requirements.txt .
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
+# 安裝依賴套件，使用 --no-cache-dir 避免使用快取
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the working directory contents into the container at /app
+# 將所有檔案複製到工作目錄
 COPY . .
 
-# Run app.py when the container launches
-ENTRYPOINT ["python", "app.py"]
+# 執行 Flask 應用程式，設定監聽所有介面 (0.0.0.0) 和端口 8080
+CMD ["flask", "run", "--host=0.0.0.0", "--port=8080"]
+
