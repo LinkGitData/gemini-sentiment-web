@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>文字情感分析</title>
-</head>
+    <link rel="stylesheet" href="style.css"> </head>
 <body>
     <h1>文字情感分析</h1>
     <form method="POST" action="/analyze">
@@ -10,6 +10,33 @@
         <div id="processed-text"></div>
         <button type="submit">分析</button>
     </form>
+    <div id="analysis-result" style="display: none;">  <!-- 初始隱藏 -->
+        {% if result %}
+            <h2>分析結果</h2>
+            <p>輸入文字: {{ result.text }}</p>
+            <p>情緒: {{ result.sentiment }}</p>
+            <p>解釋: {{ result.explanation }}</p>
+            <p>Gemini 的解釋: {{ result.gemini_explanation }}</p>
+            <p>實體: 
+                {% if result.entities %}
+                    {% for entity in result.entities %}
+                        {{ entity }}, 
+                    {% endfor %}
+                {% else %}
+                    無
+                {% endif %}
+            </p>
+            <p>自動貼標: 
+                {% if result.labels %}
+                    {% for label in result.labels %}
+                        {{ label }}, 
+                    {% endfor %}
+                {% else %}
+                    無
+                {% endif %}
+            </p>
+        {% endif %}
+    </div>
     <script>
         // 監聽表單提交事件
         document.querySelector('form').addEventListener('submit', function(event) {
@@ -26,7 +53,13 @@
             setTimeout(function() {
                 // 提交表單
                 event.target.submit();
-            }, 5000); // 延遲 1 秒
+            }, 1000); // 延遲 1 秒
+        });
+
+        // 監聽分析結果的顯示
+        document.getElementById('analysis-result').addEventListener('DOMContentLoaded', function() {
+            // 顯示分析結果
+            document.getElementById('analysis-result').style.display = 'block';
         });
     </script>
 </body>

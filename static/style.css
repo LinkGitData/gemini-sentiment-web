@@ -136,3 +136,38 @@ code {
 	}
 }
 
+/* 基本樣式 */
+#analysis-result {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f8f8f8;
+}
+
+#analysis-result h2 {
+  color: #333;
+}
+
+#analysis-result p {
+  margin-bottom: 10px;
+}
+
+/* 可選：突出顯示情緒 */
+#analysis-result p:first-child {
+  font-weight: bold;
+}
+
+#analysis-result p:first-child:before {
+  content: "情緒: ";
+  font-weight: normal;
+}
+
+/* 可選：樣式化實體和標籤 */
+#analysis-result p:nth-child(5)::before {
+  content: "實體: ";
+}
+
+#analysis-result p:nth-child(6)::before {
+  content: "自動貼標: ";
+}

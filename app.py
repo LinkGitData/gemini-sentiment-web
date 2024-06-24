@@ -99,7 +99,7 @@ def analyze():
     }
 
     #將result用一個網頁方式呈現
-    return render_template("result.html", result=result)
+    return render_template("index.html", result=result)  # 渲染 index.html 並傳遞 result
 
     #return jsonify(result)
 
