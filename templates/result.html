@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>分析結果</title>
+</head>
+<body>
+    <h1>分析結果</h1>
+    <p>輸入文字: {{ result.text }}</p>  <!-- 新增顯示輸入文字 -->
+    <p>情緒: {{ result.sentiment }}</p>
+    <p>解釋: {{ result.explanation }}</p>
+    <p>Gemini 的解釋: {{ result.gemini_explanation }}</p>
+    <p>實體: 
+        {% if result.entities %}
+            {% for entity in result.entities %}
+                {{ entity }}, 
+            {% endfor %}
+        {% else %}
+            無
+        {% endif %}
+    </p>
+    <p>自動貼標: 
+        {% if result.labels %}
+            {% for label in result.labels %}
+                {{ label }}, 
+            {% endfor %}
+        {% else %}
+            無
+        {% endif %}
+    </p>
+</body>
+</html>

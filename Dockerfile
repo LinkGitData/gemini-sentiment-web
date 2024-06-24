@@ -1,18 +1,22 @@
-# 使用 Python 3.9-slim 作為基礎映像
+# Use the official Python 3.9 image as the base
 FROM python:3.9-slim
 
-# 設定工作目錄為 /app
+# Set the working directory to /app
 WORKDIR /app
 
-# 將 requirements.txt 複製到工作目錄
+# Copy the requirements.txt file into the container
 COPY requirements.txt .
 
-# 安裝依賴套件，使用 --no-cache-dir 避免使用快取
+# Install the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 將所有檔案複製到工作目錄
+# Copy the application code into the container
 COPY . .
 
-# 執行 Flask 應用程式，設定監聽所有介面 (0.0.0.0) 和端口 8080
+# Expose port 8080 for the Flask application
+EXPOSE 8080
+
+# Define the command to run the Flask application
 CMD ["flask", "run", "--host=0.0.0.0", "--port=8080"]
+
 
