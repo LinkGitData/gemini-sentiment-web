@@ -10,7 +10,7 @@
         <div id="processed-text"></div>
         <button type="submit">分析</button>
     </form>
-    <div id="analysis-result" style="display: none;">  <!-- 初始隱藏 -->
+    <div id="analysis-result">  
         {% if result %}
             <h2>分析結果</h2>
             <p>輸入文字: {{ result.text }}</p>
@@ -37,30 +37,6 @@
             </p>
         {% endif %}
     </div>
-    <script>
-        // 監聽表單提交事件
-        document.querySelector('form').addEventListener('submit', function(event) {
-            // 取得文字輸入框的值
-            const textInput = document.querySelector('textarea[name="text"]').value;
-
-            // 移除換行符和空白字元，並將文字整合成一行
-            const processedText = textInput.replace(/\s+/g, ' ');
-
-            // 將處理後的文字顯示在 div 中
-            document.getElementById('processed-text').innerHTML = '處理後的文字：' + processedText;
-
-            // 延遲提交表單
-            setTimeout(function() {
-                // 提交表單
-                event.target.submit();
-            }, 1000); // 延遲 1 秒
-        });
-
-        // 監聽分析結果的顯示
-        document.getElementById('analysis-result').addEventListener('DOMContentLoaded', function() {
-            // 顯示分析結果
-            document.getElementById('analysis-result').style.display = 'block';
-        });
-    </script>
+    
 </body>
 </html>

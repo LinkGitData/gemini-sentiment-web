@@ -1,18 +1,22 @@
 from flask import Flask, render_template, request, jsonify
 import vertexai
-from vertexai.preview.language_models import TextGenerationModel
+from vertexai.generative_models import GenerativeModel
+import vertexai.preview.generative_models as generative_models
 import json
 import time
 
 # 設定 Google Cloud 專案 ID 和地區
-PROJECT_ID = "linklin-lab"  # 請替換為您的專案 ID
-REGION = "asia-east1"  # 請替換為您的地區
+#PROJECT_ID = "linklin-lab"  # 請替換為您的專案 ID
+#REGION = "asia-east1"  # 請替換為您的地區
 
 # 初始化 Vertex AI
 #vertexai.init(project=PROJECT_ID, location=REGION)
 
-# 載入 Text Bison 模型
-model = TextGenerationModel.from_pretrained("text-bison@002")
+# 載入 gemini-1.5-flash 模型
+model = GenerativeModel(
+    "gemini-1.5-flash-001",
+    system_instruction=["""你是很棒的評論家，你的服務很有幫助"""]
+  )
 
 # 定義情緒標籤對應表
 sentiment_labels = {
@@ -38,10 +42,15 @@ sentiment_explanations = {
 # 定義進行情緒分析和實體標註的函式
 def analyze_text(text):
     try:
+        # 格式化文字，減少無法分析的情形
+        text = text.strip()  # 去除前後空格
+        text = text.replace("\n", "")  # 將換行符替換為空格
+        text = text.replace(" ", "")  # 移除多餘空格
+
         # 測試用 text="今天天氣真好，陽光明媚，適合去公園散步。"
-        response = model.predict(
+        response = model.generate_content(
             f"""分析以下文字的情緒，並標註其中的實體且自動貼標：
-            "{text}"  
+            "{text}"
             情緒應為以下其中之一：非常正面、正面、稍微正面、中性、稍微負面、負面、非常負面。
             實體可以是人名、地名、組織名、產品名等。
             自動貼標可以是品質、價格，服務、環境、等候或處理時間等。
@@ -51,9 +60,10 @@ def analyze_text(text):
             Gemini的解釋: <Gemini自己的情緒解釋>
             實體: <實體1>, <實體2>, ...
             自動貼標: <標籤1>, <標籤2>, ...
-            """
+            """,
+            generation_config=generation_config,
+            safety_settings=safety_settings,
         )
-
 
         # 解析模型回應 (根據模型的實際輸出調整解析邏輯)
         lines = response.text.strip().split("\n")
@@ -66,7 +76,20 @@ def analyze_text(text):
         return sentiment, explanation, gemini_explanation, entities, labels, text
 
     except (json.JSONDecodeError, KeyError, IndexError) as e:
-        return "unknown", "無法解釋", "Gemini 沒有提供解釋", [], []
+        return "無法解釋", "無法解釋", "Gemini 沒有提供解釋", [], [], text  # 回傳 text 變數
+
+generation_config = {
+    "max_output_tokens": 256,
+    "temperature": 1.0,
+    "top_p": 0.95,
+}
+
+safety_settings = {
+    generative_models.HarmCategory.HARM_CATEGORY_HATE_SPEECH: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+    generative_models.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+    generative_models.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+    generative_models.HarmCategory.HARM_CATEGORY_HARASSMENT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+}
 
 # 建立 Flask 應用程式
 app = Flask(__name__)
