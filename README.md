@@ -1,58 +1,47 @@
-# Cloud Run Hello World with Cloud Code
+# Gemini Web Application
 
-"Hello World" is a [Cloud Run](https://cloud.google.com/run/docs) application that renders a simple webpage.
+This repository contains the code for a simple web application built with Flask and deployed on Google Cloud Run.
 
-For details on how to use this sample as a template in Cloud Code, read the documentation for Cloud Code for [VS Code](https://cloud.google.com/code/docs/vscode/quickstart-cloud-run?utm_source=ext&utm_medium=partner&utm_campaign=CDR_kri_gcp_cloudcodereadmes_012521&utm_content=-) or [IntelliJ](https://cloud.google.com/code/docs/intellij/quickstart-cloud-run?utm_source=ext&utm_medium=partner&utm_campaign=CDR_kri_gcp_cloudcodereadmes_012521&utm_content=-).
+## Project Structure
 
-### Table of Contents
-* [Getting Started with VS Code](#getting-started-with-vs-code)
-* [Getting Started with IntelliJ](#getting-started-with-intellij)
-* [Sign up for User Research](#sign-up-for-user-research)
+The project is structured as follows:
 
----
-## Getting Started with VS Code
+- **index.html:** The HTML template for the web application.
+- **app.py:** The Flask application code.
 
-### Run the app locally with the Cloud Run Emulator
-1. Click on the Cloud Code status bar and select 'Run on Cloud Run Emulator'.  
-![image](./img/status-bar.png)
+## Getting Started
 
-2. Use the Cloud Run Emulator dialog to specify your [builder option](https://cloud.google.com/code/docs/vscode/deploying-a-cloud-run-app#deploying_a_cloud_run_service). Cloud Code supports Docker, Jib, and Buildpacks. See the skaffold documentation on [builders](https://skaffold.dev/docs/pipeline-stages/builders/) for more information about build artifact types.  
-![image](./img/build-config.png)
+1. **Install Dependencies:**
+   ```bash
+   pip install -r requirements.txt
+Run the Application Locally:
 
-3. Click ‘Run’. Cloud Code begins building your image.
+flask run
+This will start a development server on http://127.0.0.1:5000/.
 
-4. View the build progress in the OUTPUT window. Once the build has finished, click on the URL in the OUTPUT window to view your live application.  
-![image](./img/cloud-run-url.png)
+Deploy to Google Cloud Run:
 
-5. To stop the application, click the stop icon on the Debug Toolbar.
+Create a Cloud Run service:
+gcloud run deploy --image=us-docker.pkg.dev/cloudrun/container/hello --platform=managed --region=us-central1 --memory=128Mi --timeout=120s --concurrency=80
+Replace us-docker.pkg.dev/cloudrun/container/hello with your container image URI.
+Replace us-central1 with your desired region.
+Features
+Simple Webpage: The application renders a basic HTML page with a greeting message.
+Contributing
+Contributions are welcome! Please open an issue or submit a pull request.
 
----
-## Getting Started with IntelliJ
+License
+This project is licensed under the MIT License.
 
-### Run the app locally with the Cloud Run Emulator
 
-#### Define run configuration
+This README.md file provides a basic structure for your project, including:
 
-1. Click the Run/Debug configurations dropdown on the top taskbar and select 'Edit Configurations'.  
-![image](./img/edit-config.png)
+- **Project description:** Briefly explains what the application does.
+- **Project structure:** Outlines the organization of the code.
+- **Getting started:** Provides instructions on how to set up and run the application locally.
+- **Deployment:** Explains how to deploy the application to Google Cloud Run.
+- **Features:** Lists the key functionalities of the application.
+- **Contributing:** Encourages contributions and provides guidelines.
+- **License:** Specifies the license under which the code is released.
 
-2. Select 'Cloud Run: Run Locally' and specify your [builder option](https://cloud.google.com/code/docs/intellij/developing-a-cloud-run-app#defining_your_run_configuration). Cloud Code supports Docker, Jib, and Buildpacks. See the skaffold documentation on [builders](https://skaffold.dev/docs/pipeline-stages/builders/) for more information about build artifact types.  
-![image](./img/local-build-config.png)
-
-#### Run the application
-1. Click the Run/Debug configurations dropdown and select 'Cloud Run: Run Locally'. Click the run icon.  
-![image](./img/config-run-locally.png)
-
-2. View the build process in the output window. Once the build has finished, you will receive a notification from the Event Log. Click 'View' to access the local URLs for your deployed services.  
-![image](./img/local-success.png)
-
----
-## Sign up for User Research
-
-We want to hear your feedback!
-
-The Cloud Code team is inviting our user community to sign-up to participate in Google User Experience Research. 
-
-If you’re invited to join a study, you may try out a new product or tell us what you think about the products you use every day. At this time, Google is only sending invitations for upcoming remote studies. Once a study is complete, you’ll receive a token of thanks for your participation such as a gift card or some Google swag. 
-
-[Sign up using this link](https://google.qualtrics.com/jfe/form/SV_4Me7SiMewdvVYhL?reserved=1&utm_source=In-product&Q_Language=en&utm_medium=own_prd&utm_campaign=Q1&productTag=clou&campaignDate=January2021&referral_code=UXbT481079) and answer a few questions about yourself, as this will help our research team match you to studies that are a great fit.
+Remember to replace the placeholder information with your actual project details.

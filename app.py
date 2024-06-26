@@ -5,17 +5,17 @@ import vertexai.preview.generative_models as generative_models
 import json
 
 # 設定 Google Cloud 專案 ID 和地區
-#PROJECT_ID = "linklin-lab"  # 請替換為您的專案 ID
-#REGION = "asia-east1"  # 請替換為您的地區
+# PROJECT_ID = "Your PROJECT ID"  # 請替換為您的專案 ID
+# REGION = "Your REGION"  # 請替換為您的地區
 
 # 初始化 Vertex AI
-#vertexai.init(project=PROJECT_ID, location=REGION)
+# vertexai.init(project=PROJECT_ID, location=REGION)
 
 # 載入 gemini-1.5-flash 模型
 model = GenerativeModel(
     "gemini-1.5-flash-001",
     system_instruction=["""你是很棒的評論家，你的服務很有幫助"""]
-  )
+)
 
 # 定義情緒標籤對應表
 sentiment_labels = {
@@ -72,14 +72,17 @@ generation_config = {
     "max_output_tokens": 256,
     "temperature": 1.0,
     "top_p": 0.95,
+    "top_k": 5,
 }
 
 safety_settings = {
-    generative_models.HarmCategory.HARM_CATEGORY_HATE_SPEECH: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-    generative_models.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-    generative_models.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-    generative_models.HarmCategory.HARM_CATEGORY_HARASSMENT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+    generative_models.HarmCategory.HARM_CATEGORY_HATE_SPEECH: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,  # 阻擋中度及以上仇恨言論
+    generative_models.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,  # 阻擋中度及以上危險內容
+    generative_models.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,  # 阻擋中度及以上性暗示內容
+    generative_models.HarmCategory.HARM_CATEGORY_HARASSMENT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,  # 阻擋中度及以上騷擾內容
 }
+
+
 # 建立 Flask 應用程式
 app = Flask(__name__)
 
@@ -110,10 +113,10 @@ def analyze():
         "labels": labels
     }
 
-    #將result用一個網頁方式呈現
+    # 將 result 用一個網頁方式呈現
     return render_template("index.html", result=result)  # 渲染 index.html 並傳遞 result
 
-    #return jsonify(result)
+    # return jsonify(result)
 
 if __name__ == "__main__":
     app.run(debug=True)

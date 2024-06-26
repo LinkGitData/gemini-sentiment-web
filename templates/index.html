@@ -2,48 +2,59 @@
 <html>
 <head>
     <title>評論文字 GenAI 情感分析與自動貼標</title>
-    <link rel="stylesheet" href="style.css"> </head>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
     <h1>評論文字 GenAI 情感分析與自動貼標</h1>
+
     <form method="POST" action="/analyze">
         <textarea name="text" rows="10" cols="50" placeholder="請輸入文字，最多 500 字"></textarea><br>
         <div id="processed-text"></div>
         <button type="submit">分析</button>
     </form>
-    <p>評論文字範例: </p>
+
+    <p>評論文字範例:</p>
     <ul>
-        <li>評論可以從google地圖複製貼上測試，下次還會再來。</li>
+        <li>評論可以從google地圖複製貼上測試，好棒。</li>
         <li>這部電影劇情很無聊，特效也不怎麼樣，完全浪費時間。</li>
-        <li>這家餐廳的服務真的太棒了！食物也很好吃，非常失望。</li>
+        <li>這家餐廳的服務很棒！但是食物不怎樣，讓人非常失望。</li>
     </ul>
-    <div id="analysis-result">  
+
+    <div id="analysis-result">
         {% if result %}
             <h2>分析結果</h2>
-            <p>輸入文字: {{ result.text }}</p>
-            <p>情緒: {{ result.sentiment }}</p>
-            <p>解釋: {{ result.explanation }}</p>
-            <p>Gemini 的解釋: {{ result.gemini_explanation }}</p>
-            <p>實體: 
-                {% if result.entities %}
-                    {% for entity in result.entities %}
-                        {{ entity }}, 
-                    {% endfor %}
-                {% else %}
-                    無
-                {% endif %}
-            </p>
-            <p><strong>自動貼標:</strong> 
-                {% if result.labels %}
-                    {% for label in result.labels %}
-                        <span style="color: red;">{{ label }}, </span>
-                    {% endfor %}
-                {% else %}
-                    無
-                {% endif %}
-            </p>
+            <div>
+                <p>輸入文字: {{ result.text }}</p>
+                <p>情緒: {{ result.sentiment }}</p>
+                <p>解釋: {{ result.explanation }}</p>
+                <p>Gemini 的解釋: {{ result.gemini_explanation }}</p>
+            </div>
+
+            <div>
+                <p>實體:
+                    {% if result.entities %}
+                        {% for entity in result.entities %}
+                            {{ entity }},
+                        {% endfor %}
+                    {% else %}
+                        無
+                    {% endif %}
+                </p>
+
+                <p><strong>自動貼標:</strong>
+                    {% if result.labels %}
+                        {% for label in result.labels %}
+                            <span style="color: red;">{{ label }}, </span>
+                        {% endfor %}
+                    {% else %}
+                        無
+                    {% endif %}
+                </p>
+            </div>
+
             <a href="/">返回首頁</a>
         {% endif %}
     </div>
-    
+
 </body>
 </html>
