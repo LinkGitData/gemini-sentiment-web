@@ -3,8 +3,11 @@ import vertexai
 from vertexai.generative_models import GenerativeModel
 import vertexai.preview.generative_models as generative_models
 import json
+import os
 import sentry_sdk
 
+# 取得Sentry DSN
+SENTRY_DSN = os.environ.get('SENTRY_DSN')
 # 設定 Google Cloud 專案 ID 和地區
 # PROJECT_ID = "Your PROJECT ID"  # 請替換為您的專案 ID
 # REGION = "Your REGION"  # 請替換為您的地區
@@ -86,7 +89,7 @@ safety_settings = {
 
 # 初始化 Sentry SDK，用於錯誤追蹤和效能監控
 sentry_sdk.init(
-    dsn="https://0168c02bfcc980ecf0dc4d9b66ed0908@o4507501143588864.ingest.us.sentry.io/4507501256048640",
+    dsn=SENTRY_DSN,
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
     traces_sample_rate=1.0,
