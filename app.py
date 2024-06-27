@@ -3,6 +3,7 @@ import vertexai
 from vertexai.generative_models import GenerativeModel
 import vertexai.preview.generative_models as generative_models
 import json
+import sentry_sdk
 
 # 設定 Google Cloud 專案 ID 和地區
 # PROJECT_ID = "Your PROJECT ID"  # 請替換為您的專案 ID
@@ -68,11 +69,12 @@ def analyze_text(text):
 
     return sentiment, explanation, gemini_explanation, entities, labels, text
 
+# 設定模型生成內容的參數
 generation_config = {
-    "max_output_tokens": 256,
-    "temperature": 1.0,
-    "top_p": 0.95,
-    "top_k": 5,
+    "max_output_tokens": 256,   # 設定模型生成的最大 token 數量，限制輸出長度
+    "temperature": 1.0,         # 設定模型生成文字的隨機性，值越高越隨機
+    "top_p": 0.95,              # 設定模型生成文字的機率分佈，值越高越傾向於高機率的詞彙
+    "top_k": 5,                 # 設定模型生成文字時考慮的候選詞彙數量，值越高越傾向於罕見的詞彙
 }
 
 safety_settings = {
@@ -82,6 +84,17 @@ safety_settings = {
     generative_models.HarmCategory.HARM_CATEGORY_HARASSMENT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,  # 阻擋中度及以上騷擾內容
 }
 
+# 初始化 Sentry SDK，用於錯誤追蹤和效能監控
+sentry_sdk.init(
+    dsn="https://0168c02bfcc980ecf0dc4d9b66ed0908@o4507501143588864.ingest.us.sentry.io/4507501256048640",
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    traces_sample_rate=1.0,
+    # Set profiles_sample_rate to 1.0 to profile 100%
+    # of sampled transactions.
+    # We recommend adjusting this value in production.
+    profiles_sample_rate=1.0,
+)
 
 # 建立 Flask 應用程式
 app = Flask(__name__)
