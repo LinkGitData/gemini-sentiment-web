@@ -20,10 +20,9 @@
                 }
             },
             "target": {
-                "minikube": {
-                    "autoStop": false // Add this line
-                }
+                "minikube": {}
             },
+            "autoStop": false, // Add this line
             "watch": true
         }
     ]
