@@ -31,8 +31,3 @@ Before running the application, ensure you have the following installed:
 
 You will also need a Google Cloud project with the Vertex AI API enabled and a Sentry account with a DSN configured.
 
-## Installation
-
-1. Clone the repository:
-   ```bash
-   git clone [https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git)
