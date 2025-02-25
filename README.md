@@ -1,47 +1,38 @@
-# Gemini Web Application
+# Sentiment Analysis and Entity Recognition with Gemini 1.5 Flash
 
-This repository contains the code for a simple web application built with Flask and deployed on Google Cloud Run.
+This Flask application leverages the power of the Gemini 1.5 Flash model to analyze the sentiment of text and identify entities within it. It provides a user-friendly interface for inputting text and receiving detailed analysis results.
 
-## Project Structure
+## Features
 
-The project is structured as follows:
+- **Sentiment Analysis**: Accurately determines the sentiment of the input text, classifying it into categories such as very positive, positive, slightly positive, neutral, slightly negative, negative, and very negative.
+- **Entity Recognition**: Identifies and extracts key entities from the text, such as names of people, locations, organizations, and products.
+- **Automatic Labeling**: Automatically assigns relevant labels to the identified entities, such as "product quality (positive)", "service (negative)", etc.
+- **Detailed Explanations**: Provides clear explanations for the assigned sentiment and labels, offering insights into the model's reasoning.
+- **User-Friendly Interface**: Built with Flask, the application offers a simple and intuitive web interface for interacting with the model.
+- **Error Handling**: Implements robust error handling to gracefully manage potential issues such as exceeding the character limit or invalid model responses.
+- **Sentry Integration**: Integrated with Sentry for error tracking and performance monitoring, ensuring application stability and reliability.
 
-- **index.html:** The HTML template for the web application.
-- **app.py:** The Flask application code.
+## Technologies Used
 
-## Getting Started
+- **Python**: The primary programming language used for developing the application.
+- **Flask**: A lightweight web framework for building the user interface and handling requests.
+- **Vertex AI**: Google Cloud's machine learning platform, used for accessing the Gemini 1.5 Flash model.
+- **Gemini 1.5 Flash**: A powerful generative AI model used for sentiment analysis and entity recognition.
+- **Sentry**: An error tracking and performance monitoring tool.
 
-1. **Install Dependencies:**
+## Prerequisites
+
+Before running the application, ensure you have the following installed:
+
+- Python 3.7 or higher
+- Flask
+- Vertex AI Python SDK
+- Sentry SDK
+
+You will also need a Google Cloud project with the Vertex AI API enabled and a Sentry account with a DSN configured.
+
+## Installation
+
+1. Clone the repository:
    ```bash
-   pip install -r requirements.txt
-Run the Application Locally:
-
-flask run
-This will start a development server on http://127.0.0.1:5000/.
-
-Deploy to Google Cloud Run:
-
-Create a Cloud Run service:
-gcloud run deploy --image=us-docker.pkg.dev/cloudrun/container/hello --platform=managed --region=us-central1 --memory=128Mi --timeout=120s --concurrency=80
-Replace us-docker.pkg.dev/cloudrun/container/hello with your container image URI.
-Replace us-central1 with your desired region.
-Features
-Simple Webpage: The application renders a basic HTML page with a greeting message.
-Contributing
-Contributions are welcome! Please open an issue or submit a pull request.
-
-License
-This project is licensed under the MIT License.
-
-
-This README.md file provides a basic structure for your project, including:
-
-- **Project description:** Briefly explains what the application does.
-- **Project structure:** Outlines the organization of the code.
-- **Getting started:** Provides instructions on how to set up and run the application locally.
-- **Deployment:** Explains how to deploy the application to Google Cloud Run.
-- **Features:** Lists the key functionalities of the application.
-- **Contributing:** Encourages contributions and provides guidelines.
-- **License:** Specifies the license under which the code is released.
-
-Remember to replace the placeholder information with your actual project details.
+   git clone [https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git)
