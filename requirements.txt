@@ -3,3 +3,4 @@ requests==2.31.0
 sentry-sdk>=2.7.0
 google-cloud-aiplatform>=1.50.0
 debugpy # Required for debugging.
+urllib3>=2.6.0 # not directly required, pinned by Snyk to avoid a vulnerability
