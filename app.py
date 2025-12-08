@@ -9,15 +9,16 @@ import sentry_sdk
 # 取得Sentry DSN
 SENTRY_DSN = os.environ.get('SENTRY_DSN')
 # 設定 Google Cloud 專案 ID 和地區
-# PROJECT_ID = "Your PROJECT ID"  # 請替換為您的專案 ID
-# REGION = "Your REGION"  # 請替換為您的地區
+PROJECT_ID = os.environ.get("PROJECT_ID")
+REGION = os.environ.get("REGION", "us-central1")
 
 # 初始化 Vertex AI
-# vertexai.init(project=PROJECT_ID, location=REGION)
+if PROJECT_ID:
+    vertexai.init(project=PROJECT_ID, location=REGION)
 
-# 載入 gemini-1.5-flash 模型
+# 載入 gemini-2.5-flash 模型
 model = GenerativeModel(
-    "gemini-1.5-flash-001",
+    "gemini-2.5-flash-001",
     system_instruction=["""你是很棒的評論家，你的服務很有幫助"""]
 )
 
@@ -111,9 +112,9 @@ def index():
 @app.route("/analyze", methods=["POST"])
 def analyze():
     text = request.form["text"]
-    # 檢查文字長度是否超過 500 字
-    if len(text) > 500:
-        return jsonify({"error": "輸入文字長度超過 500 字，請縮短文字。"}), 400
+    # 檢查文字長度是否超過 1000 字
+    if len(text) > 1000:
+        return jsonify({"error": "輸入文字長度超過 1000 字，請縮短文字。"}), 400
 
     try:
         sentiment, explanation, gemini_explanation, entities, labels, text = analyze_text(text)
