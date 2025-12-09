@@ -1,173 +1,55 @@
 body {
-	font-family: 'Roboto', sans-serif;
-	font-display: fallback;
-	background: url('cloud_bg.svg');
-	background-size: cover;
-	background-position: center;
-	line-height: 1.6;
- }
+    font-family: Arial, sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
 
 h1 {
-	font-size: 24px;
-	font-weight: bold;
-	margin-bottom: 0px;
+    color: #333;
+    text-align: center;
 }
 
-h2 {
-	font-size: 18px;
-	font-weight: normal;
-	margin-top: 4px;
+form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-h3 {
-	font-size: 20px;
-	margin-bottom: 0px;
+textarea {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    /* Ensures padding doesn't increase width */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    resize: vertical;
+    /* Allow vertical resizing only */
 }
 
-em {
-	font-weight: 600;
-	font-style: normal;
+button {
+    background-color: #1a73e8;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
 }
 
-.next {
-    font-size: 15px;
-	margin-top: 8px;
-	margin-bottom: 8px;
+button:hover {
+    background-color: #1557b0;
 }
 
-.container {
-	max-width: 700px;
-	margin-left: auto;
-	margin-right: auto;
-} 
-
-.hero {
-	margin-top: 172px;
-}
-
-.hero .logo {
-	width: 140px;
-	float: left;
-	margin-right: 32px;
-}
-
-.hero .message {
-	font-size: 15px;
-	text-align: center;
-	margin-bottom: 24px;
-}
-
-.details {
-	clear: both;
-	height: 400px;
-	line-height: 1.8;
-}
-
-.callout {
-	font-size: 14px;
-	color: #1967D2;
-	font-weight: 600;
-	padding: 16px 24px 16px 40px;
-	background: url('lightbulb_icon.svg') #E8F0FE ;
-	background-position: 16px 16px;
-	background-repeat: no-repeat;
-	line-height: 1.6;
-}
-
-code {
-	font-family: 'Roboto Mono', Courier, monospace;
-	color: #A30038;
-	background-color: #F8F8F8;
-	border: 1px solid #DDD;
-	border-radius: 2px;
-	padding: 0 6px;
-	font-weight: 500;
-}
-
-.cta {
-	padding-bottom: 52px;
-}
-
-.cta a {
-	color: white;
-	text-decoration: none;
-	background-color: rgb(14, 101, 241);
-	padding: 8px 12px;
-	margin: 8px;
-	min-height: 36px;
-	border-radius: 2px;
-	font-weight: 600;
-}
-
-.cta a:hover {
-    background-color: rgb(66, 133, 244, 0.9);
-}
-
-@media (max-width: 600px) {
-    .hero .logo {
-        float: initial;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-	.container {
-        margin-top: 0;
-	}
-
-    .hero {
-        margin-top: 0;
-        margin-bottom: 24px;
-	}
-}
-@media (prefers-color-scheme: dark) {
-    body {
-        background: black url('dark_bg.svg');
-        color:white;
-    }
-	a {
-		color: #8AB4F8;
-	}
-	a:visited {
-		color: #b48af8;
-	}
-	.cta a {
-		color: white;
-	}
-}
-
-/* 基本樣式 */
 #analysis-result {
-  margin-top: 20px;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #f8f8f8;
-}
-
-#analysis-result h2 {
-  color: #333;
-}
-
-#analysis-result p {
-  margin-bottom: 10px;
-}
-
-/* 可選：突出顯示情緒 */
-#analysis-result p:first-child {
-  font-weight: bold;
-}
-
-#analysis-result p:first-child:before {
-  content: "情緒: ";
-  font-weight: normal;
-}
-
-/* 可選：樣式化實體和標籤 */
-#analysis-result p:nth-child(5)::before {
-  content: "實體: ";
-}
-
-#analysis-result p:nth-child(6)::before {
-  content: "自動貼標: ";
+    margin-top: 20px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
