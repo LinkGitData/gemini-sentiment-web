@@ -11,14 +11,17 @@ SENTRY_DSN = os.environ.get('SENTRY_DSN')
 # 設定 Google Cloud 專案 ID 和地區
 PROJECT_ID = os.environ.get("PROJECT_ID")
 REGION = os.environ.get("REGION", "us-central1")
+# Gemini 2.5 is not available in all regions (e.g. asia-east1).
+# Use MODEL_REGION to specify where the model runs (e.g. asia-northeast1).
+MODEL_REGION = os.environ.get("MODEL_REGION", "asia-northeast1")
 
 # 初始化 Vertex AI
 if PROJECT_ID:
-    vertexai.init(project=PROJECT_ID, location=REGION)
+    vertexai.init(project=PROJECT_ID, location=MODEL_REGION)
 
-# 載入 gemini-2.5-flash 模型
+# 載入 gemini-2.5-flash-lite 模型
 model = GenerativeModel(
-    "gemini-2.5-flash-001",
+    "gemini-2.5-flash-lite",
     system_instruction=["""你是很棒的評論家，你的服務很有幫助"""]
 )
 
@@ -52,33 +55,40 @@ def analyze_text(text):
         情緒應為以下其中之一：非常正面、正面、稍微正面、中性、稍微負面、負面、非常負面。
         實體可以是人名、地名、組織名、產品名等。
         自動貼標可以是牛肉麵品質(正面)、炒飯品質(負面)、服務(正面)、環境(中性)、等候或處理時間(負面)、價格（正面）等。
-        請用以下格式回答：
-        情緒: <情緒>
-        解釋: <情緒解釋>
-        Gemini的解釋: <Gemini自己的情緒解釋>
-        實體: <實體1>, <實體2>, ...
-        自動貼標: <標籤1>, <標籤2>, ...
+        請用 JSON 格式回答，包含以下欄位：
+        - sentiment: 情緒
+        - gemini_explanation: Gemini自己的情緒解釋
+        - entities: 實體列表
+        - labels: 自動貼標列表
         """,
         generation_config=generation_config,
         safety_settings=safety_settings,
     )
 
     # 解析回應
-    lines = response.text.strip().split("\n")
-    sentiment = lines[0].split(": ")[1]
-    explanation = sentiment_explanations.get(sentiment_labels.get(sentiment, "unknown"), "無法解釋")
-    gemini_explanation = lines[2].split(": ")[1] if len(lines) > 2 else "Gemini 沒有提供解釋"
-    entities = [e.strip() for e in lines[3].split(": ")[1].split(",")] if len(lines) > 3 else []
-    labels = [e.strip() for e in lines[4].split(": ")[1].split(",")] if len(lines) > 4 else []
+    try:
+        result_json = json.loads(response.text)
+        sentiment = result_json.get("sentiment", "中性")
+        gemini_explanation = result_json.get("gemini_explanation", "Gemini 沒有提供解釋")
+        entities = result_json.get("entities", [])
+        labels = result_json.get("labels", [])
+        
+        # 根據 sentiment 取得 explanation
+        explanation = sentiment_explanations.get(sentiment_labels.get(sentiment, "unknown"), "無法解釋")
 
-    return sentiment, explanation, gemini_explanation, entities, labels, text
+        return sentiment, explanation, gemini_explanation, entities, labels, text
+    except json.JSONDecodeError:
+        # 如果 JSON 解析失敗，回傳預設值或拋出錯誤
+        raise IndexError("Model response is not valid JSON")
+
 
 # 設定模型生成內容的參數
 generation_config = {
-    "max_output_tokens": 256,   # 設定模型生成的最大 token 數量，限制輸出長度
-    "temperature": 1.0,         # 設定模型生成文字的隨機性，值越高越隨機
-    "top_p": 0.95,              # 設定模型生成文字的機率分佈，值越高越傾向於高機率的詞彙
-    "top_k": 5,                 # 設定模型生成文字時考慮的候選詞彙數量，值越高越傾向於罕見的詞彙
+    "max_output_tokens": 1024,   # 增加 token 數量以容納 JSON
+    "temperature": 1.0, 
+    "top_p": 0.95,
+    "top_k": 5,
+    "response_mime_type": "application/json", # 強制 JSON 輸出
 }
 
 safety_settings = {

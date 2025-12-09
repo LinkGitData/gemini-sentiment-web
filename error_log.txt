@@ -1,0 +1,186 @@
+---
+errorGroups:
+- id: CMbAyfq09uKPywE
+insertId: 6936765d000cb9f74295534c
+labels:
+  instanceId: 0007e26d684541a4443a96a5fcb8256cb0ed9d525a09c334ac7e62a840bc825ee0af848d17220b37c3839ceb79a29a1082515940f4448474ecfd240792300b1a783aae7234aeb6910884dc32888d
+logName: projects/linklin-lab/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-12-08T06:55:25.913896021Z'
+resource:
+  labels:
+    configuration_name: gemini-sentiment-web
+    location: asia-east1
+    project_id: linklin-lab
+    revision_name: gemini-sentiment-web-00002-kbv
+    service_name: gemini-sentiment-web
+  type: cloud_run_revision
+severity: ERROR
+textPayload: |-
+  Traceback (most recent call last):
+    File "/usr/local/lib/python3.9/site-packages/flask/app.py", line 2190, in wsgi_app
+      response = self.full_dispatch_request()
+    File "/usr/local/lib/python3.9/site-packages/flask/app.py", line 1486, in full_dispatch_request
+      rv = self.handle_user_exception(e)
+    File "/usr/local/lib/python3.9/site-packages/flask/app.py", line 1484, in full_dispatch_request
+      rv = self.dispatch_request()
+    File "/usr/local/lib/python3.9/site-packages/flask/app.py", line 1469, in dispatch_request
+      return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+    File "/app/app.py", line 121, in analyze
+      sentiment, explanation, gemini_explanation, entities, labels, text = analyze_text(text)
+    File "/app/app.py", line 50, in analyze_text
+      response = model.generate_content(
+    File "/usr/local/lib/python3.9/site-packages/vertexai/generative_models/_generative_models.py", line 710, in generate_content
+      return self._generate_content(
+    File "/usr/local/lib/python3.9/site-packages/vertexai/generative_models/_generative_models.py", line 833, in _generate_content
+      gapic_response = self._prediction_client.generate_content(request=request)
+    File "/usr/local/lib/python3.9/site-packages/google/cloud/aiplatform_v1/services/prediction_service/client.py", line 2302, in generate_content
+      response = rpc(
+    File "/usr/local/lib/python3.9/site-packages/google/api_core/gapic_v1/method.py", line 131, in __call__
+      return wrapped_func(*args, **kwargs)
+    File "/usr/local/lib/python3.9/site-packages/google/api_core/grpc_helpers.py", line 77, in error_remapped_callable
+      raise exceptions.from_grpc_error(exc) from exc
+  google.api_core.exceptions.NotFound: 404 Publisher Model `projects/linklin-lab/locations/us-central1/publishers/google/models/gemini-2.5-flash-001` not found.
+timestamp: '2025-12-08T06:55:25.834039Z'
+---
+errorGroups:
+- id: CK2xn97NvOKqRA
+insertId: 6936765d000cb9d338c4cee1
+labels:
+  instanceId: 0007e26d684541a4443a96a5fcb8256cb0ed9d525a09c334ac7e62a840bc825ee0af848d17220b37c3839ceb79a29a1082515940f4448474ecfd240792300b1a783aae7234aeb6910884dc32888d
+logName: projects/linklin-lab/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-12-08T06:55:25.913896021Z'
+resource:
+  labels:
+    configuration_name: gemini-sentiment-web
+    location: asia-east1
+    project_id: linklin-lab
+    revision_name: gemini-sentiment-web-00002-kbv
+    service_name: gemini-sentiment-web
+  type: cloud_run_revision
+severity: ERROR
+textPayload: |-
+  Traceback (most recent call last):
+    File "/usr/local/lib/python3.9/site-packages/google/api_core/grpc_helpers.py", line 75, in error_remapped_callable
+      return callable_(*args, **kwargs)
+    File "/usr/local/lib/python3.9/site-packages/grpc/_interceptor.py", line 276, in __call__
+      response, ignored_call = self._with_call(
+    File "/usr/local/lib/python3.9/site-packages/grpc/_interceptor.py", line 331, in _with_call
+      return call.result(), call
+    File "/usr/local/lib/python3.9/site-packages/grpc/_channel.py", line 438, in result
+      raise self
+    File "/usr/local/lib/python3.9/site-packages/grpc/_interceptor.py", line 314, in continuation
+      response, call = self._thunk(new_method).with_call(
+    File "/usr/local/lib/python3.9/site-packages/grpc/_channel.py", line 1180, in with_call
+      return _end_unary_response_blocking(state, call, True, None)
+    File "/usr/local/lib/python3.9/site-packages/grpc/_channel.py", line 996, in _end_unary_response_blocking
+      raise _InactiveRpcError(state)  # pytype: disable=not-instantiable
+  grpc._channel._InactiveRpcError: <_InactiveRpcError of RPC that terminated with:
+timestamp: '2025-12-08T06:55:25.834003Z'
+---
+httpRequest:
+  latency: 8.603116435s
+  protocol: HTTP/1.1
+  remoteIp: 211.21.3.243
+  requestMethod: POST
+  requestSize: '586'
+  requestUrl: https://gemini-sentiment-web-859028856928.asia-east1.run.app/analyze
+  responseSize: '395'
+  serverIp: 34.143.76.2
+  status: 500
+  userAgent: curl/8.7.1
+insertId: 6936765d000cf79115fbb38a
+labels:
+  instanceId: 0007e26d684541a4443a96a5fcb8256cb0ed9d525a09c334ac7e62a840bc825ee0af848d17220b37c3839ceb79a29a1082515940f4448474ecfd240792300b1a783aae7234aeb6910884dc32888d
+logName: projects/linklin-lab/logs/run.googleapis.com%2Frequests
+receiveTimestamp: '2025-12-08T06:55:25.852351293Z'
+resource:
+  labels:
+    configuration_name: gemini-sentiment-web
+    location: asia-east1
+    project_id: linklin-lab
+    revision_name: gemini-sentiment-web-00002-kbv
+    service_name: gemini-sentiment-web
+  type: cloud_run_revision
+severity: ERROR
+spanId: bea985b11cb5a76c
+timestamp: '2025-12-08T06:55:17.240463Z'
+trace: projects/linklin-lab/traces/dd6633c80dff7035ce00eb8a41236261
+traceSampled: true
+---
+errorGroups:
+- id: CMbAyfq09uKPywE
+insertId: 693674660002ad83d0c05939
+labels:
+  instanceId: 0007e26d68ab1547ac17b22f0f1b4a15d9f581d09b9a2d8384d66b19a0a3a764a1130b0e76c9f94e185e9896f15a625c6a8238589559b4487e641bbccd74fd6642c07802cb75679bf7a9140ac814
+logName: projects/linklin-lab/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-12-08T06:47:02.428078813Z'
+resource:
+  labels:
+    configuration_name: gemini-sentiment-web
+    location: asia-east1
+    project_id: linklin-lab
+    revision_name: gemini-sentiment-web-00001-42v
+    service_name: gemini-sentiment-web
+  type: cloud_run_revision
+severity: ERROR
+textPayload: |-
+  Traceback (most recent call last):
+    File "/usr/local/lib/python3.9/site-packages/flask/app.py", line 2190, in wsgi_app
+      response = self.full_dispatch_request()
+    File "/usr/local/lib/python3.9/site-packages/flask/app.py", line 1486, in full_dispatch_request
+      rv = self.handle_user_exception(e)
+    File "/usr/local/lib/python3.9/site-packages/flask/app.py", line 1484, in full_dispatch_request
+      rv = self.dispatch_request()
+    File "/usr/local/lib/python3.9/site-packages/flask/app.py", line 1469, in dispatch_request
+      return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+    File "/app/app.py", line 120, in analyze
+      sentiment, explanation, gemini_explanation, entities, labels, text = analyze_text(text)
+    File "/app/app.py", line 49, in analyze_text
+      response = model.generate_content(
+    File "/usr/local/lib/python3.9/site-packages/vertexai/generative_models/_generative_models.py", line 710, in generate_content
+      return self._generate_content(
+    File "/usr/local/lib/python3.9/site-packages/vertexai/generative_models/_generative_models.py", line 833, in _generate_content
+      gapic_response = self._prediction_client.generate_content(request=request)
+    File "/usr/local/lib/python3.9/site-packages/google/cloud/aiplatform_v1/services/prediction_service/client.py", line 2302, in generate_content
+      response = rpc(
+    File "/usr/local/lib/python3.9/site-packages/google/api_core/gapic_v1/method.py", line 131, in __call__
+      return wrapped_func(*args, **kwargs)
+    File "/usr/local/lib/python3.9/site-packages/google/api_core/grpc_helpers.py", line 77, in error_remapped_callable
+      raise exceptions.from_grpc_error(exc) from exc
+  google.api_core.exceptions.NotFound: 404 Publisher Model `projects/linklin-lab/locations/asia-east1/publishers/google/models/gemini-2.5-flash-001` not found.
+timestamp: '2025-12-08T06:47:02.175491Z'
+---
+errorGroups:
+- id: CK2xn97NvOKqRA
+insertId: 693674660002ad4f24f952f6
+labels:
+  instanceId: 0007e26d68ab1547ac17b22f0f1b4a15d9f581d09b9a2d8384d66b19a0a3a764a1130b0e76c9f94e185e9896f15a625c6a8238589559b4487e641bbccd74fd6642c07802cb75679bf7a9140ac814
+logName: projects/linklin-lab/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-12-08T06:47:02.428078813Z'
+resource:
+  labels:
+    configuration_name: gemini-sentiment-web
+    location: asia-east1
+    project_id: linklin-lab
+    revision_name: gemini-sentiment-web-00001-42v
+    service_name: gemini-sentiment-web
+  type: cloud_run_revision
+severity: ERROR
+textPayload: |-
+  Traceback (most recent call last):
+    File "/usr/local/lib/python3.9/site-packages/google/api_core/grpc_helpers.py", line 75, in error_remapped_callable
+      return callable_(*args, **kwargs)
+    File "/usr/local/lib/python3.9/site-packages/grpc/_interceptor.py", line 276, in __call__
+      response, ignored_call = self._with_call(
+    File "/usr/local/lib/python3.9/site-packages/grpc/_interceptor.py", line 331, in _with_call
+      return call.result(), call
+    File "/usr/local/lib/python3.9/site-packages/grpc/_channel.py", line 438, in result
+      raise self
+    File "/usr/local/lib/python3.9/site-packages/grpc/_interceptor.py", line 314, in continuation
+      response, call = self._thunk(new_method).with_call(
+    File "/usr/local/lib/python3.9/site-packages/grpc/_channel.py", line 1180, in with_call
+      return _end_unary_response_blocking(state, call, True, None)
+    File "/usr/local/lib/python3.9/site-packages/grpc/_channel.py", line 996, in _end_unary_response_blocking
+      raise _InactiveRpcError(state)  # pytype: disable=not-instantiable
+  grpc._channel._InactiveRpcError: <_InactiveRpcError of RPC that terminated with:
+timestamp: '2025-12-08T06:47:02.175439Z'
