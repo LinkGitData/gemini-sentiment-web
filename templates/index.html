@@ -39,7 +39,7 @@
             <p>實體:
                 {% if result.entities %}
                 {% for entity in result.entities %}
-                {{ entity }},
+                {{ entity }}{% if not loop.last %}, {% endif %}
                 {% endfor %}
                 {% else %}
                 無
@@ -49,7 +49,7 @@
             <p><strong>自動貼標:</strong>
                 {% if result.labels %}
                 {% for label in result.labels %}
-                <span style="color: red;">{{ label }}, </span>
+                <span style="color: red;">{{ label }}{% if not loop.last %}, {% endif %}</span>
                 {% endfor %}
                 {% else %}
                 無

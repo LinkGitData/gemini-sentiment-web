@@ -15,6 +15,8 @@ REGION = os.environ.get("REGION", "us-central1")
 # Use MODEL_REGION to specify where the model runs (e.g. asia-northeast1).
 MODEL_REGION = os.environ.get("MODEL_REGION", "asia-northeast1")
 
+MAX_TEXT_LENGTH = 1000
+
 # 初始化 Vertex AI
 if PROJECT_ID:
     vertexai.init(project=PROJECT_ID, location=MODEL_REGION)
@@ -22,7 +24,17 @@ if PROJECT_ID:
 # 載入 gemini-2.5-flash-lite 模型
 model = GenerativeModel(
     "gemini-2.5-flash-lite",
-    system_instruction=["""你是很棒的評論家，你的服務很有幫助"""]
+    system_instruction=["""你是很棒的評論家，你的服務很有幫助。
+
+分析使用者提供的文字情緒，並標註其中的實體且自動貼標。
+情緒應為以下其中之一：非常正面、正面、稍微正面、中性、稍微負面、負面、非常負面。
+實體可以是人名、地名、組織名、產品名等。
+自動貼標可以是牛肉麵品質(正面)、炒飯品質(負面)、服務(正面)、環境(中性)、等候或處理時間(負面)、價格（正面）等。
+請用 JSON 格式回答，包含以下欄位：
+- sentiment: 情緒
+- gemini_explanation: Gemini自己的情緒解釋
+- entities: 實體列表
+- labels: 自動貼標列表"""]
 )
 
 # 定義情緒標籤對應表
@@ -48,19 +60,9 @@ sentiment_explanations = {
 
 # 定義進行情緒分析和實體標註的函式
 def analyze_text(text):
-    # 呼叫模型進行預測，提供明確的指示
+    # 呼叫模型進行預測，純粹傳遞使用者輸入的文字以避免 Prompt Injection
     response = model.generate_content(
-        f"""分析以下文字的情緒，並標註其中的實體且自動貼標：
-        "{text}"
-        情緒應為以下其中之一：非常正面、正面、稍微正面、中性、稍微負面、負面、非常負面。
-        實體可以是人名、地名、組織名、產品名等。
-        自動貼標可以是牛肉麵品質(正面)、炒飯品質(負面)、服務(正面)、環境(中性)、等候或處理時間(負面)、價格（正面）等。
-        請用 JSON 格式回答，包含以下欄位：
-        - sentiment: 情緒
-        - gemini_explanation: Gemini自己的情緒解釋
-        - entities: 實體列表
-        - labels: 自動貼標列表
-        """,
+        text,
         generation_config=generation_config,
         safety_settings=safety_settings,
     )
@@ -77,9 +79,9 @@ def analyze_text(text):
         explanation = sentiment_explanations.get(sentiment_labels.get(sentiment, "unknown"), "無法解釋")
 
         return sentiment, explanation, gemini_explanation, entities, labels, text
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as exc:
         # 如果 JSON 解析失敗，回傳預設值或拋出錯誤
-        raise IndexError("Model response is not valid JSON")
+        raise ValueError("Model response is not valid JSON") from exc
 
 
 # 設定模型生成內容的參數
@@ -122,13 +124,13 @@ def index():
 @app.route("/analyze", methods=["POST"])
 def analyze():
     text = request.form["text"]
-    # 檢查文字長度是否超過 1000 字
-    if len(text) > 1000:
-        return jsonify({"error": "輸入文字長度超過 1000 字，請縮短文字。"}), 400
+    # 檢查文字長度是否超過 MAX_TEXT_LENGTH 字
+    if len(text) > MAX_TEXT_LENGTH:
+        return jsonify({"error": f"輸入文字長度超過 {MAX_TEXT_LENGTH} 字，請縮短文字。"}), 400
 
     try:
         sentiment, explanation, gemini_explanation, entities, labels, text = analyze_text(text)
-    except IndexError:
+    except ValueError:
         return jsonify({"error": "模型回應格式錯誤，無法解析結果。"}), 500
 
     result = {
