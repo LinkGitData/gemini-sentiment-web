@@ -79,8 +79,17 @@ def analyze_text(text):
         result_json = json.loads(response.text)
         sentiment = result_json.get("sentiment", "中性")
         gemini_explanation = result_json.get("gemini_explanation", "Gemini 沒有提供解釋")
-        entities = result_json.get("entities", [])
-        labels = result_json.get("labels", [])
+        raw_entities = result_json.get("entities", [])
+        raw_labels = result_json.get("labels", [])
+        
+        # 確保回傳給前端的一律是字串 (避免 Gemini 偷偷回傳 Dict 物件導致 Frontend 壞掉)
+        def _parse_item(item):
+            if isinstance(item, dict):
+                return " - ".join(str(v) for v in item.values())
+            return str(item)
+            
+        entities = [_parse_item(e) for e in raw_entities] if isinstance(raw_entities, list) else []
+        labels = [_parse_item(l) for l in raw_labels] if isinstance(raw_labels, list) else []
         
         # 根據 sentiment 取得 explanation
         explanation = sentiment_explanations.get(sentiment_labels.get(sentiment, "unknown"), "無法解釋")
