@@ -1,66 +1,217 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="zh-TW">
 <head>
-    <title>評論文字 Gen AI 情感分析與自動貼標</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>評論文字 Gen AI 情感分析</title>
+    <meta name="csrf-token" content="{{ csrf_token() if csrf_token else '' }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
-    <h1>評論文字 Gen AI 情感分析與自動貼標</h1>
+    <div class="container">
+        <header>
+            <h1>情緒分析與自動貼標</h1>
+            <p class="subtitle">輸入評論文字，利用 Gemini 2.5 進行深度分析</p>
+        </header>
 
-    <form method="POST" action="/analyze">
-        <textarea name="text" rows="10" placeholder="請輸入文字，最多 1000 字"></textarea><br>
-        <div id="processed-text"></div>
-        <button type="submit">分析</button>
-    </form>
+        <form id="analyze-form">
+            <div class="input-group">
+                <textarea id="text-input" name="text" rows="6" placeholder="請在此輸入評論，例如：「這家餐廳的服務很棒！但是食物不怎樣，讓人十分失望。」（最多 1000 字）"></textarea>
+            </div>
+            <button type="submit" id="submit-btn">
+                <span class="btn-text">開始分析</span>
+                <span class="spinner" style="display: none;"></span>
+            </button>
+            <div id="error-message" class="error-msg" style="display: none;"></div>
+        </form>
 
-    <p>評論文字範例:</p>
-    <ul>
-        <li>評論可以從google地圖複製貼上測試，好棒。</li>
-        <li>這部電影劇情很無聊，特效也不怎麼樣，完全浪費時間。</li>
-        <li>這家餐廳的服務很棒！但是食物不怎樣，讓人十分失望。</li>
-    </ul>
-
-    <a href="https://github.com/LinkGitData/gemini-sentiment-web.git" target="_blank">View Project Code on GitHub</a>
-    <p>By Roy Lin, 2024/06/26</p>
-
-    <div id="analysis-result">
-        {% if result %}
-        <h2>分析結果</h2>
-        <div>
-            <p>輸入文字: {{ result.text }}</p>
-            <p>情緒: {{ result.sentiment }}</p>
-            <p>解釋: {{ result.explanation }}</p>
-            <p>Gemini 的解釋: {{ result.gemini_explanation }}</p>
+        <div class="examples">
+            <p><strong>試試看這些範例：</strong></p>
+            <ul>
+                <li><a href="#" class="example-link">評論可以從google地圖複製貼上測試，好棒。</a></li>
+                <li><a href="#" class="example-link">這部電影劇情很無聊，特效也不怎麼樣，完全浪費時間。</a></li>
+                <li><a href="#" class="example-link">這家餐廳的服務很棒！但是食物不怎樣，讓人十分失望。</a></li>
+            </ul>
         </div>
 
-        <div>
-            <p>實體:
-                {% if result.entities %}
-                {% for entity in result.entities %}
-                {{ entity }}{% if not loop.last %}, {% endif %}
-                {% endfor %}
-                {% else %}
-                無
-                {% endif %}
-            </p>
+        <div id="analysis-result" style="display: none;">
+            <h2>分析結果</h2>
+            <div class="result-card">
+                <div class="result-section">
+                    <h3>情緒狀態</h3>
+                    <div id="sentiment-badge" class="badge"></div>
+                    <p id="sentiment-explanation" class="explanation text-muted"></p>
+                </div>
+                
+                <div class="result-section">
+                    <h3>Gemini 的解釋</h3>
+                    <p id="gemini-explanation" class="gemini-quote"></p>
+                </div>
 
-            <p><strong>自動貼標:</strong>
-                {% if result.labels %}
-                {% for label in result.labels %}
-                <span style="color: red;">{{ label }}{% if not loop.last %}, {% endif %}</span>
-                {% endfor %}
-                {% else %}
-                無
-                {% endif %}
-            </p>
+                <div class="result-section">
+                    <h3>實體 (Entities)</h3>
+                    <div id="entities-container" class="tags-container"></div>
+                </div>
+
+                <div class="result-section">
+                    <h3>自動貼標 (Labels)</h3>
+                    <div id="labels-container" class="tags-container"></div>
+                </div>
+            </div>
         </div>
-
-        <a href="/">返回首頁</a>
-        {% endif %}
+        
+        <footer>
+            <a href="https://github.com/LinkGitData/gemini-sentiment-web.git" target="_blank" class="github-link">在 GitHub 上檢視專案</a>
+            <p class="author">By Roy Lin, 2024</p>
+        </footer>
     </div>
 
-</body>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('analyze-form');
+            const submitBtn = document.getElementById('submit-btn');
+            const btnText = submitBtn.querySelector('.btn-text');
+            const spinner = submitBtn.querySelector('.spinner');
+            const errorMsg = document.getElementById('error-message');
+            const resultDiv = document.getElementById('analysis-result');
+            const textInput = document.getElementById('text-input');
+            const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+            const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : '';
 
+            // Handle Example Links
+            document.querySelectorAll('.example-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    textInput.value = e.target.textContent;
+                    textInput.focus();
+                });
+            });
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const text = textInput.value.trim();
+                
+                if (!text) {
+                    showError('請輸入文字進行分析');
+                    textInput.focus();
+                    return;
+                }
+                
+                if (text.length > 1000) {
+                    showError('字數超過上限 1000 字');
+                    return;
+                }
+
+                // Loading State
+                setLoadingState(true);
+                
+                try {
+                    const formData = new URLSearchParams();
+                    formData.append('text', text);
+                    
+                    const headers = {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    };
+                    
+                    if (csrfToken) {
+                        headers['X-CSRFToken'] = csrfToken;
+                    }
+
+                    const response = await fetch('/analyze', {
+                        method: 'POST',
+                        headers: headers,
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || '分析過程發生錯誤');
+                    }
+
+                    displayResult(data);
+                } catch (error) {
+                    showError(error.message);
+                } finally {
+                    setLoadingState(false);
+                }
+            });
+
+            function setLoadingState(isLoading) {
+                if (isLoading) {
+                    submitBtn.disabled = true;
+                    btnText.textContent = '分析中...';
+                    spinner.style.display = 'inline-block';
+                    errorMsg.style.display = 'none';
+                    resultDiv.style.opacity = '0.5';
+                } else {
+                    submitBtn.disabled = false;
+                    btnText.textContent = '開始分析';
+                    spinner.style.display = 'none';
+                    resultDiv.style.opacity = '1';
+                }
+            }
+
+            function showError(message) {
+                errorMsg.textContent = message;
+                errorMsg.style.display = 'block';
+                resultDiv.style.display = 'none';
+            }
+
+            function displayResult(data) {
+                errorMsg.style.display = 'none';
+                resultDiv.style.display = 'block';
+                
+                // Sentiment
+                const sentimentBadge = document.getElementById('sentiment-badge');
+                sentimentBadge.textContent = data.sentiment;
+                sentimentBadge.className = 'badge badge-' + getSentimentColorClass(data.sentiment);
+                
+                document.getElementById('sentiment-explanation').textContent = data.explanation;
+                document.getElementById('gemini-explanation').textContent = data.gemini_explanation;
+                
+                // Entities
+                const entitiesContainer = document.getElementById('entities-container');
+                entitiesContainer.innerHTML = '';
+                if (data.entities && data.entities.length > 0) {
+                    data.entities.forEach(entity => {
+                        const span = document.createElement('span');
+                        span.className = 'tag entity-tag';
+                        span.textContent = entity;
+                        entitiesContainer.appendChild(span);
+                    });
+                } else {
+                    entitiesContainer.innerHTML = '<span class="text-muted">無</span>';
+                }
+                
+                // Labels
+                const labelsContainer = document.getElementById('labels-container');
+                labelsContainer.innerHTML = '';
+                if (data.labels && data.labels.length > 0) {
+                    data.labels.forEach(label => {
+                        const span = document.createElement('span');
+                        span.className = 'tag label-tag';
+                        span.textContent = label;
+                        labelsContainer.appendChild(span);
+                    });
+                } else {
+                    labelsContainer.innerHTML = '<span class="text-muted">無</span>';
+                }
+                
+                // Scroll to result smoothly
+                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            function getSentimentColorClass(sentiment) {
+                if (sentiment.includes('正面')) return 'positive';
+                if (sentiment.includes('負面')) return 'negative';
+                return 'neutral';
+            }
+        });
+    </script>
+</body>
 </html>

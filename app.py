@@ -1,4 +1,7 @@
 from flask import Flask, render_template, request, jsonify
+from flask_wtf.csrf import CSRFProtect
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import vertexai
 from vertexai.generative_models import GenerativeModel
 import vertexai.preview.generative_models as generative_models
@@ -8,6 +11,8 @@ import sentry_sdk
 
 # 取得Sentry DSN
 SENTRY_DSN = os.environ.get('SENTRY_DSN')
+FLASK_ENV = os.environ.get('FLASK_ENV', 'development')
+
 # 設定 Google Cloud 專案 ID 和地區
 PROJECT_ID = os.environ.get("PROJECT_ID")
 REGION = os.environ.get("REGION", "us-central1")
@@ -60,9 +65,11 @@ sentiment_explanations = {
 
 # 定義進行情緒分析和實體標註的函式
 def analyze_text(text):
-    # 呼叫模型進行預測，純粹傳遞使用者輸入的文字以避免 Prompt Injection
+    # 呼叫模型進行預測，利用明確邊界包圍使用者輸入以減緩 Prompt Injection 風險
+    safe_text = f"請分析以下被 <<< 以及 >>> 包圍的使用者文字內容：\n<<<\n{text}\n>>>"
+    
     response = model.generate_content(
-        text,
+        safe_text,
         generation_config=generation_config,
         safety_settings=safety_settings,
     )
@@ -103,17 +110,24 @@ safety_settings = {
 # 初始化 Sentry SDK，用於錯誤追蹤和效能監控
 sentry_sdk.init(
     dsn=SENTRY_DSN,
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    traces_sample_rate=1.0,
-    # Set profiles_sample_rate to 1.0 to profile 100%
-    # of sampled transactions.
-    # We recommend adjusting this value in production.
-    profiles_sample_rate=1.0,
+    # 動態調整正式環境的追蹤頻率避免產生過高成本及敏感資料外洩
+    traces_sample_rate=1.0 if FLASK_ENV == 'development' else 0.1,
+    profiles_sample_rate=1.0 if FLASK_ENV == 'development' else 0.1,
 )
 
 # 建立 Flask 應用程式
 app = Flask(__name__)
+
+# 安全性設定：CSRF 與頻率限制 (Limiter)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default-dev-secret-key-change-in-prod')
+csrf = CSRFProtect(app)
+
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
 
 # 首頁路由
 @app.route("/")
@@ -122,8 +136,9 @@ def index():
 
 # 分析路由
 @app.route("/analyze", methods=["POST"])
+@limiter.limit("5 per minute")
 def analyze():
-    text = request.form["text"]
+    text = request.form.get("text", "")
     # 檢查文字長度是否超過 MAX_TEXT_LENGTH 字
     if len(text) > MAX_TEXT_LENGTH:
         return jsonify({"error": f"輸入文字長度超過 {MAX_TEXT_LENGTH} 字，請縮短文字。"}), 400
@@ -132,6 +147,8 @@ def analyze():
         sentiment, explanation, gemini_explanation, entities, labels, text = analyze_text(text)
     except ValueError:
         return jsonify({"error": "模型回應格式錯誤，無法解析結果。"}), 500
+    except Exception as e:
+        return jsonify({"error": "伺服器發生未預期的錯誤，請稍後再試。"}), 500
 
     result = {
         "text": text,  # 新增整理過的輸入文字值
@@ -142,10 +159,12 @@ def analyze():
         "labels": labels
     }
 
-    # 將 result 用一個網頁方式呈現
-    return render_template("index.html", result=result)  # 渲染 index.html 並傳遞 result
+    # 支援 AJAX 或 Fetch API 的 JSON 回傳
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest" or "application/json" in request.accept_mimetypes:
+        return jsonify(result)
 
-    # return jsonify(result)
+    # 將 result 用一個網頁方式呈現 (Traditional fallback)
+    return render_template("index.html", result=result)
 
 if __name__ == "__main__":
     app.run(debug=True)
