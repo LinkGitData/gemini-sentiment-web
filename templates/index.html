@@ -181,7 +181,12 @@
                     data.entities.forEach(entity => {
                         const span = document.createElement('span');
                         span.className = 'tag entity-tag';
-                        span.textContent = entity;
+                        // Handle case where Gemini returns an object instead of string
+                        if (typeof entity === 'object' && entity !== null) {
+                            span.textContent = Object.values(entity).join(' - ');
+                        } else {
+                            span.textContent = entity;
+                        }
                         entitiesContainer.appendChild(span);
                     });
                 } else {
@@ -195,7 +200,12 @@
                     data.labels.forEach(label => {
                         const span = document.createElement('span');
                         span.className = 'tag label-tag';
-                        span.textContent = label;
+                        // Handle case where Gemini returns an object instead of string
+                        if (typeof label === 'object' && label !== null) {
+                            span.textContent = Object.values(label).join(' - ');
+                        } else {
+                            span.textContent = label;
+                        }
                         labelsContainer.appendChild(span);
                     });
                 } else {
